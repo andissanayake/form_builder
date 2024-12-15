@@ -7,7 +7,6 @@ const ComplexForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
 
   const form = useUIForms(NativeUIComponents, (initForm) => {
-    // Step 1: Personal Details
     initForm.setupTextInput({
       key: "firstName",
       label: "First Name",
@@ -30,7 +29,6 @@ const ComplexForm = () => {
       validators: [Validators.required("Age is required")],
     });
 
-    // Step 2: Contact Information
     initForm.setupTextInput({
       key: "email",
       label: "Email Address",
@@ -48,7 +46,6 @@ const ComplexForm = () => {
       ],
     });
 
-    // Step 3: Preferences
     initForm.setupDropdown({
       key: "preferredContact",
       label: "Preferred Contact Method",
@@ -69,7 +66,6 @@ const ComplexForm = () => {
     });
   });
 
-  // Handle form submission
   const handleSubmit = () => {
     const validationResult = form.validate();
     if (validationResult.isValid) {
