@@ -43,7 +43,7 @@ const useForms = (uiComponents: UIComponents): UseFormsResult => {
     }
 
     while (rows.current[row].length <= col) {
-      rows.current[row].push(null as any); // Create empty slots
+      rows.current[row].push(null as any);
     }
 
     rows.current[row][col] = config;

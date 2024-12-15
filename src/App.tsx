@@ -1,9 +1,9 @@
-import MyForm from "./Form";
+import ComplexForm from "./lib/ComplexForm";
 
 function App() {
   return (
     <>
-      <MyForm />
+      <ComplexForm />
     </>
   );
 }
