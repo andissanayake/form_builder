@@ -20,11 +20,24 @@ export type DropdownComponentDefinition<T extends number | string> =
 
 export type CheckBoxComponentDefinition = BaseComponentDefinition<boolean>;
 
+export type DateComponentDefinition = BaseComponentDefinition<string> & {
+  minDate?: string;
+  maxDate?: string;
+};
+
+export type TextAreaComponentDefinition = BaseComponentDefinition<string> & {
+  rows?: number;
+  cols?: number;
+  maxLength?: number;
+};
+
 export interface UIComponents {
   textInput: React.ComponentType<InputTextComponentDefinition>;
   numberInput: React.ComponentType<InputNumberComponentDefinition>;
   dropdown: React.ComponentType<DropdownComponentDefinition<string | number>>;
   checkbox: React.ComponentType<CheckBoxComponentDefinition>;
+  dateInput: React.ComponentType<DateComponentDefinition>;
+  textArea: React.ComponentType<TextAreaComponentDefinition>;
 }
 
 export type Validator = (value: any) => string | null;
@@ -39,6 +52,7 @@ export interface UIForms {
       validators?: Validator[];
     }
   ) => void;
+
   setupNumberInput: (
     props: Omit<InputNumberComponentDefinition, "onChange" | "error"> & {
       key: string;
@@ -46,6 +60,7 @@ export interface UIForms {
       validators?: Validator[];
     }
   ) => void;
+
   setupDropdown: (
     props: Omit<
       DropdownComponentDefinition<string | number>,
@@ -56,6 +71,7 @@ export interface UIForms {
       validators?: Validator[];
     }
   ) => void;
+
   setupCheckbox: (
     props: Omit<CheckBoxComponentDefinition, "onChange" | "error"> & {
       key: string;
@@ -63,6 +79,23 @@ export interface UIForms {
       validators?: Validator[];
     }
   ) => void;
+
+  setupDateInput: (
+    props: Omit<DateComponentDefinition, "onChange" | "errors"> & {
+      key: string;
+      wrapperSize?: number;
+      validators?: Validator[];
+    }
+  ) => void;
+
+  setupTextArea: (
+    props: Omit<TextAreaComponentDefinition, "onChange" | "errors"> & {
+      key: string;
+      wrapperSize?: number;
+      validators?: Validator[];
+    }
+  ) => void;
+
   get: () => { values: Record<string, any> };
   view: () => React.ReactNode;
   validate: () => {

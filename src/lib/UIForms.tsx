@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import "./grid.css";
 import {
   CheckBoxComponentDefinition,
+  DateComponentDefinition,
   DropdownComponentDefinition,
   InputNumberComponentDefinition,
   InputTextComponentDefinition,
+  TextAreaComponentDefinition,
   UIComponents,
   UIForms,
   Validator,
@@ -28,7 +30,13 @@ type ComponentConfig =
     } & Omit<DropdownComponentDefinition<string | number>, "onChange">)
   | (BaseComponentConfig & {
       type: "checkbox";
-    } & Omit<CheckBoxComponentDefinition, "onChange">);
+    } & Omit<CheckBoxComponentDefinition, "onChange">)
+  | (BaseComponentConfig & {
+      type: "dateInput";
+    } & Omit<DateComponentDefinition, "onChange">)
+  | (BaseComponentConfig & {
+      type: "textArea";
+    } & Omit<TextAreaComponentDefinition, "onChange">);
 
 export const useUIForms = (
   uic: UIComponents,
@@ -68,6 +76,22 @@ export const useUIForms = (
     setComponents((prev) => {
       const updatedComponents = new Map(prev);
       updatedComponents.set(props.key, { type: "checkbox", ...props });
+      return updatedComponents;
+    });
+  };
+
+  const setupDateInput: UIForms["setupDateInput"] = (props) => {
+    setComponents((prev) => {
+      const updatedComponents = new Map(prev);
+      updatedComponents.set(props.key, { type: "dateInput", ...props });
+      return updatedComponents;
+    });
+  };
+
+  const setupTextArea: UIForms["setupTextArea"] = (props) => {
+    setComponents((prev) => {
+      const updatedComponents = new Map(prev);
+      updatedComponents.set(props.key, { type: "textArea", ...props });
       return updatedComponents;
     });
   };
@@ -141,6 +165,8 @@ export const useUIForms = (
           numberInput: uic.numberInput,
           dropdown: uic.dropdown,
           checkbox: uic.checkbox,
+          dateInput: uic.dateInput,
+          textArea: uic.textArea,
         };
 
         const Component = componentMap[type];
@@ -161,6 +187,8 @@ export const useUIForms = (
     setupNumberInput,
     setupDropdown,
     setupCheckbox,
+    setupDateInput,
+    setupTextArea,
     view,
     get,
     validate,
@@ -179,6 +207,10 @@ export const useUIForms = (
             updatedComponents.set(props.key, { type: "dropdown", ...props }),
           setupCheckbox: (props) =>
             updatedComponents.set(props.key, { type: "checkbox", ...props }),
+          setupDateInput: (props) =>
+            updatedComponents.set(props.key, { type: "dateInput", ...props }),
+          setupTextArea: (props) =>
+            updatedComponents.set(props.key, { type: "textArea", ...props }),
           view: () => null,
           get: () => {
             return {

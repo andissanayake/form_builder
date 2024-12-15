@@ -1,8 +1,10 @@
 import {
   CheckBoxComponentDefinition,
+  DateComponentDefinition,
   DropdownComponentDefinition,
   InputNumberComponentDefinition,
   InputTextComponentDefinition,
+  TextAreaComponentDefinition,
   UIComponents,
 } from "./ComponentDefinition";
 
@@ -107,9 +109,66 @@ const DefaultCheckbox: React.FC<CheckBoxComponentDefinition> = ({
   </div>
 );
 
+const DefaultDateInput: React.FC<DateComponentDefinition> = ({
+  label,
+  value = "",
+  onChange,
+  minDate,
+  maxDate,
+  wrapperClassName,
+  errors,
+}) => (
+  <div className={wrapperClassName}>
+    <label>{label}</label>
+    <input
+      style={{ width: "calc(100% - 8px)" }}
+      type="date"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      min={minDate}
+      max={maxDate}
+    />
+    <div style={{ color: "red" }}>
+      {errors?.map((error) => (
+        <span key={Math.random().toString(36).substr(2, 9)}>{error}</span>
+      ))}
+    </div>
+  </div>
+);
+
+const DefaultTextArea: React.FC<TextAreaComponentDefinition> = ({
+  label,
+  value = "",
+  onChange,
+  rows = 5,
+  cols = 40,
+  maxLength,
+  wrapperClassName,
+  errors,
+}) => (
+  <div className={wrapperClassName}>
+    <label>{label}</label>
+    <textarea
+      rows={rows}
+      cols={cols}
+      maxLength={maxLength}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      style={{ width: "calc(100% - 8px)" }}
+    />
+    <div style={{ color: "red" }}>
+      {errors?.map((error) => (
+        <span key={Math.random().toString(36).substr(2, 9)}>{error}</span>
+      ))}
+    </div>
+  </div>
+);
+
 export const NativeUIComponents: UIComponents = {
   textInput: DefaultTextInput,
   numberInput: DefaultNumberInput,
   dropdown: DefaultDropdown,
   checkbox: DefaultCheckbox,
+  dateInput: DefaultDateInput,
+  textArea: DefaultTextArea,
 };

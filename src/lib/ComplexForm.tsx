@@ -4,8 +4,6 @@ import { NativeUIComponents } from "./NativeUIComponents";
 import { Validators } from "./Validators";
 
 const ComplexForm = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-
   const form = useUIForms(NativeUIComponents, (initForm) => {
     initForm.setupTextInput({
       key: "firstName",
@@ -64,6 +62,30 @@ const ComplexForm = () => {
       wrapperSize: 12,
       validators: [Validators.required("You must agree to the terms")],
     });
+
+    // Add a date input
+    initForm.setupDateInput({
+      key: "birthDate",
+      label: "Birth Date",
+      wrapperSize: 6,
+      validators: [Validators.required("Birth date is required")],
+      minDate: "1900-01-01",
+      maxDate: new Date().toISOString().split("T")[0], // Today's date
+    });
+
+    // Add a textarea input
+    initForm.setupTextArea({
+      key: "bio",
+      label: "Short Bio",
+      wrapperSize: 12,
+      rows: 5,
+      cols: 50,
+      maxLength: 500,
+      validators: [
+        Validators.required("A short bio is required"),
+        Validators.maxLength(500, "Bio must be at most 500 characters"),
+      ],
+    });
   });
 
   const handleSubmit = () => {
@@ -77,54 +99,22 @@ const ComplexForm = () => {
 
   return (
     <div style={{ width: 600, margin: "auto" }}>
-      <h2>Step {currentStep}</h2>
+      <h2>Complex Form</h2>
       <div>{form.view()}</div>
       <div style={{ marginTop: 20 }}>
-        {currentStep > 1 && (
-          <button
-            onClick={() => setCurrentStep((prev) => prev - 1)}
-            style={{
-              padding: "10px 20px",
-              marginRight: 10,
-              backgroundColor: "#ccc",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Back
-          </button>
-        )}
-        {currentStep < 3 && (
-          <button
-            onClick={() => setCurrentStep((prev) => prev + 1)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#007BFF",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Next
-          </button>
-        )}
-        {currentStep === 3 && (
-          <button
-            onClick={handleSubmit}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#28A745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Submit
-          </button>
-        )}
+        <button
+          onClick={handleSubmit}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#28A745",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
       </div>
     </div>
   );
