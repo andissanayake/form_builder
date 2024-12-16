@@ -8,9 +8,10 @@ const MyForm = () => {
   const form = useUIFormsV2<BasicFormControls>(NativeUIComponents, (form) => {
     // Setup controls with labels and validators
     form.setupControl(
+      "f1",
       "textInput",
-      { placeholder: "Enter text" },
       "Text Field",
+      { placeholder: "Enter text" },
       [
         Validators.required("This field is required."),
         Validators.maxLength(10, "Max length is 10"),
@@ -18,9 +19,10 @@ const MyForm = () => {
       "ui-forms-grid-item-3"
     );
     form.setupControl(
+      "f2",
       "numberInput",
-      { min: 0, max: 100 },
       "Number Field",
+      { min: 0, max: 100 },
       [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );

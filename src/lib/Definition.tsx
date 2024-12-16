@@ -20,9 +20,10 @@ export type Validator = (value: any) => string | null;
 
 export interface UIFormsV2<T extends ControlMap> {
   setupControl: <Key extends keyof T>(
-    key: Key,
-    parameters: T[Key]["config"],
+    key: string,
+    type: Key,
     label: string,
+    parameters: T[Key]["config"],
     validators?: Validator[],
     wrapperClassName?: string
   ) => void;

@@ -6,7 +6,9 @@ const AdvancedFormWithAllControls = () => {
   const form = useUIFormsV2(NativeUIComponents, (form) => {
     // Dropdown control
     form.setupControl(
+      "ut",
       "dropdown",
+      "User Type",
       {
         options: [
           { value: "", text: "Not Set" },
@@ -14,16 +16,17 @@ const AdvancedFormWithAllControls = () => {
           { value: "worker", text: "Worker" },
         ],
       },
-      "User Type",
+
       [Validators.required("This field is required.")],
       "ui-forms-grid-item-6"
     );
 
     // Text input control
     form.setupControl(
+      "fn",
       "textInput",
-      { placeholder: "Enter your full name" },
       "Full Name",
+      { placeholder: "Enter your full name" },
       [
         Validators.required("This field is required."),
         Validators.maxLength(10, "Max length is 10"),
@@ -33,9 +36,10 @@ const AdvancedFormWithAllControls = () => {
 
     // Number input control
     form.setupControl(
+      "age",
       "numberInput",
-      { min: 1, max: 150 },
       "Age",
+      { min: 1, max: 150 },
       [
         Validators.required("This field is required."),
         Validators.min(18, "Age must be at least 18."),
@@ -46,27 +50,30 @@ const AdvancedFormWithAllControls = () => {
 
     // Checkbox control
     form.setupControl(
+      "terms",
       "checkbox",
-      {},
       "Agree to Terms",
+      {},
       [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );
 
     // Date input control
     form.setupControl(
+      "date",
       "dateInput",
-      { minDate: "2023-01-01", maxDate: "2025-12-31" },
       "Select a Date",
+      { minDate: "2023-01-01", maxDate: "2025-12-31" },
       [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );
 
     // Text area control
     form.setupControl(
+      "feedback",
       "textArea",
-      { rows: 4, cols: 50, maxLength: 200 },
       "Your Feedback",
+      { rows: 4, cols: 50, maxLength: 200 },
       [
         Validators.required("This field is required."),
         Validators.maxLength(100, "Max length is 100"),
@@ -77,6 +84,7 @@ const AdvancedFormWithAllControls = () => {
 
   const handleSubmit = () => {
     const { values, isValid, errors } = form.validate();
+    console.log(values);
     if (isValid) {
       console.log("Form Submitted: ", values);
     } else {

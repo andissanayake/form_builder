@@ -6,10 +6,12 @@ export function useUIFormsV2<T extends ControlMap>(
   uiComponents: UIComponentsV2<T>,
   initialSetup?: (form: UIFormsV2<T>) => void
 ) {
+  // Use `string` keys to allow multiple controls of the same type
   const [controls, setControls] = useState<
     Map<
-      keyof T,
+      string, // Unique identifier for each control
       {
+        type: keyof T;
         config: T[keyof T]["config"];
         label: string;
         validators?: Validator[];
@@ -18,17 +20,24 @@ export function useUIFormsV2<T extends ControlMap>(
     >
   >(new Map());
 
-  const [formState, setFormState] = useState<
-    Partial<Record<keyof T, T[keyof T]["value"]>>
-  >({});
-  const [errors, setErrors] = useState<Partial<Record<keyof T, string[]>>>({});
+  type FormState = {
+    [key: string]: T[keyof T]["value"];
+  };
 
-  // Memoize setupControl to ensure stability
+  type ErrorsState = {
+    [key: string]: string[];
+  };
+
+  const [formState, setFormState] = useState<FormState>({});
+  const [errors, setErrors] = useState<ErrorsState>({});
+
+  // Memoized setupControl
   const setupControl: UIFormsV2<T>["setupControl"] = useCallback(
-    (key, parameters, label, validators, wrapperClassName) => {
+    (key, type, label, parameters, validators, wrapperClassName) => {
       setControls((prev) => {
         const updatedControls = new Map(prev);
         updatedControls.set(key, {
+          type,
           config: parameters,
           label,
           validators,
@@ -40,8 +49,9 @@ export function useUIFormsV2<T extends ControlMap>(
     []
   );
 
+  // Handle form state changes
   const handleChange = useCallback(
-    (key: keyof T, value: T[keyof T]["value"]) => {
+    (key: string, value: T[keyof T]["value"]) => {
       setFormState((prev) => ({
         ...prev,
         [key]: value,
@@ -50,8 +60,9 @@ export function useUIFormsV2<T extends ControlMap>(
     []
   );
 
+  // Validate the form
   const validate = useCallback(() => {
-    const newErrors: Partial<Record<keyof T, string[]>> = {};
+    const newErrors: ErrorsState = {};
     controls.forEach((control, key) => {
       if (control.validators) {
         const validationErrors = control.validators
@@ -70,29 +81,31 @@ export function useUIFormsV2<T extends ControlMap>(
     };
   }, [controls, formState]);
 
+  // Render form components dynamically
   const render = useCallback(() => {
     return Array.from(controls.entries()).map(
-      ([key, { config, label, wrapperClassName }]) => {
-        const Component = uiComponents[key] as React.ComponentType<{
-          config: T[typeof key]["config"];
-          value: T[typeof key]["value"];
-          onChange: (value: T[typeof key]["value"]) => void;
+      ([key, { type, config, label, wrapperClassName }]) => {
+        const Component = uiComponents[type] as React.ComponentType<{
+          config: T[keyof T]["config"];
+          value: T[keyof T]["value"];
+          onChange: (value: T[keyof T]["value"]) => void;
           label: string;
           errors?: string[];
+          wrapperClassName?: string;
         }>;
 
         if (!Component) return null;
 
         const props = {
           config,
-          value: formState[key] ?? ("" as T[typeof key]["value"]),
-          onChange: (value: T[typeof key]["value"]) => handleChange(key, value),
+          value: formState[key] ?? ("" as T[keyof T]["value"]),
+          onChange: (value: T[keyof T]["value"]) => handleChange(key, value),
           label,
           errors: errors[key],
-          wrapperClassName: wrapperClassName,
+          wrapperClassName,
         };
 
-        return <Component key={String(key)} {...props} />;
+        return <Component key={key} {...props} />;
       }
     );
   }, [controls, formState, errors, uiComponents, handleChange]);
@@ -103,15 +116,14 @@ export function useUIFormsV2<T extends ControlMap>(
   useEffect(() => {
     if (!isSetupInitialized.current && initialSetup) {
       initialSetup({ setupControl });
-      isSetupInitialized.current = true; // Ensure setup is only called once
+      isSetupInitialized.current = true;
     }
   }, [initialSetup, setupControl]);
 
-  const form = {
+  return {
     render,
     getValues: () => formState,
     validate,
     setupControl,
   };
-  return form;
 }
