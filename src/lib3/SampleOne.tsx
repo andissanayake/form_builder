@@ -1,45 +1,40 @@
-import React, { useState } from "react";
-import { UIComponentsV2, useUIFormsV2 } from "./Config";
+import { BasicFormControls } from "./BasicFormControls";
+import { Validator } from "./Definition";
+import { NativeUIComponents } from "./NativeUIComponents";
+import { useUIFormsV2 } from "./useUIFormsV2";
 
-// Define control types for the form
-type MyFormControls = {
-  text: { config: { placeholder: string }; value: string };
-  number: { config: { min: number; max: number }; value: number };
-};
-
-// Define UI components for the form controls
-const uiComponents: UIComponentsV2<MyFormControls> = {
-  text: ({ config, value, onChange }) => (
-    <input
-      type="text"
-      placeholder={config.placeholder}
-      value={value as string}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  ),
-  number: ({ config, value, onChange }) => (
-    <input
-      type="number"
-      min={config.min}
-      max={config.max}
-      value={value as number}
-      onChange={(e) => onChange(Number(e.target.value))}
-    />
-  ),
-};
+// Define validators
+const required: Validator = (value) =>
+  value ? null : "This field is required.";
+const maxLength =
+  (length: number): Validator =>
+  (value) =>
+    typeof value === "string" && value.length > length
+      ? `Max length is ${length}`
+      : null;
 
 // Form component using the useUIFormsV2 hook
 const MyForm = () => {
-  const { render, getValues } = useUIFormsV2<MyFormControls>(
-    uiComponents,
+  const { render, getValues, validate } = useUIFormsV2<BasicFormControls>(
+    NativeUIComponents,
     (form) => {
-      form.setupControl("text", { placeholder: "Enter text" });
-      form.setupControl("number", { min: 0, max: 100 });
+      // Setup controls with labels and validators
+      form.setupControl("text", { placeholder: "Enter text" }, "Text Field", [
+        required,
+        maxLength(10),
+      ]);
+      form.setupControl("number", { min: 0, max: 100 }, "Number Field", [
+        required,
+      ]);
     }
   );
 
   const handleSubmit = () => {
-    console.log("Form values:", getValues());
+    const isValid = validate();
+    const values = getValues();
+
+    console.log("Form isValid:", isValid);
+    console.log("Form values:", values);
   };
 
   return (
