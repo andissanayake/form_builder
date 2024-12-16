@@ -1,10 +1,9 @@
-import ComplexForm from "./lib/ComplexForm";
-import MyForm from "./lib3/SampleOne";
+import AdvancedFormWithAllControls from "./lib/AdvancedForm";
 
 function App() {
   return (
     <>
-      <MyForm />
+      <AdvancedFormWithAllControls />
     </>
   );
 }
