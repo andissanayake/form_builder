@@ -6,7 +6,7 @@ const AdvancedFormWithAllControls = () => {
   const form = useUIFormsV2(NativeUIComponents, (form) => {
     // Dropdown control
     form.setupControl(
-      "ut",
+      "userType",
       "dropdown",
       "User Type",
       {
@@ -14,22 +14,22 @@ const AdvancedFormWithAllControls = () => {
           { value: "", text: "Not Set" },
           { value: "student", text: "Student" },
           { value: "worker", text: "Worker" },
+          { value: "retired", text: "Retired" },
         ],
       },
-
-      [Validators.required("This field is required.")],
+      [Validators.required("User Type is required.")],
       "ui-forms-grid-item-6"
     );
 
     // Text input control
     form.setupControl(
-      "fn",
+      "fullName",
       "textInput",
       "Full Name",
       { placeholder: "Enter your full name" },
       [
-        Validators.required("This field is required."),
-        Validators.maxLength(10, "Max length is 10"),
+        Validators.required("Full Name is required."),
+        Validators.maxLength(50, "Max length is 50 characters."),
       ],
       "ui-forms-grid-item-6"
     );
@@ -41,68 +41,65 @@ const AdvancedFormWithAllControls = () => {
       "Age",
       { min: 1, max: 150 },
       [
-        Validators.required("This field is required."),
-        Validators.min(18, "Age must be at least 18."),
-        Validators.max(65, "Age must be no more than 65."),
+        Validators.required("Age is required."),
+        Validators.min(18, "You must be at least 18 years old."),
+        Validators.max(99, "Age cannot exceed 99."),
       ],
       "ui-forms-grid-item-3"
     );
 
     // Checkbox control
     form.setupControl(
-      "terms",
+      "agreeTerms",
       "checkbox",
       "Agree to Terms",
       {},
-      [Validators.required("This field is required.")],
-      "ui-forms-grid-item-3"
+      [Validators.required("You must agree to the terms.")],
+      "ui-forms-grid-item-6"
     );
 
     // Date input control
     form.setupControl(
-      "date",
+      "preferredDate",
       "dateInput",
-      "Select a Date",
+      "Preferred Date",
       { minDate: "2023-01-01", maxDate: "2025-12-31" },
-      [Validators.required("This field is required.")],
+      [Validators.required("Preferred Date is required.")],
       "ui-forms-grid-item-3"
     );
 
     // Text area control
     form.setupControl(
-      "feedback",
+      "comments",
       "textArea",
-      "Your Feedback",
-      { rows: 4, cols: 50, maxLength: 200 },
-      [
-        Validators.required("This field is required."),
-        Validators.maxLength(100, "Max length is 100"),
-      ],
-      "ui-forms-grid-item-6"
+      "Additional Comments",
+      { rows: 5, cols: 50, maxLength: 250 },
+      [Validators.maxLength(250, "Max length is 250 characters.")],
+      "ui-forms-grid-item-12"
     );
   });
 
   const handleSubmit = () => {
     const { values, isValid, errors } = form.validate();
-    console.log(values);
+    console.log("Form Values: ", values);
     if (isValid) {
-      console.log("Form Submitted: ", values);
+      console.log("Form submitted successfully!");
     } else {
       console.error("Validation Errors: ", errors);
     }
   };
 
   const handleReset = () => {
-    form.getValues();
+    console.log("Resetting form to initial state.");
   };
 
   return (
     <div>
       <h2>Advanced Form with All Controls</h2>
-      <div style={{ width: "600px" }} className="ui-forms-grid">
+      <div className="ui-forms-grid" style={{ maxWidth: "800px" }}>
         {form.render()}
       </div>
-      <div style={{ marginTop: "20px" }}>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
         <button onClick={handleSubmit} style={{ marginRight: "10px" }}>
           Submit
         </button>
