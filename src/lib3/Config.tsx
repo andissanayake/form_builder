@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 export type ControlMap<C = {}, V = any> = {
   [key: string]: {
@@ -33,7 +33,8 @@ export function useUIFormsV2<T extends ControlMap>(
     Partial<Record<keyof T, T[keyof T]["value"]>>
   >({});
 
-  const setupControl: UIFormsV2<T>["setupControl"] = useCallback(
+  // Memoize setupControl to ensure stability
+  const setupControl = useCallback<UIFormsV2<T>["setupControl"]>(
     (key, parameters) => {
       setControls((prev) => {
         const updatedControls = new Map(prev);
@@ -74,9 +75,13 @@ export function useUIFormsV2<T extends ControlMap>(
     });
   }, [controls, formState, uiComponents, handleChange]);
 
+  // Prevent repeated calls to initialSetup
+  const isSetupInitialized = useRef(false);
+
   useEffect(() => {
-    if (initialSetup) {
+    if (!isSetupInitialized.current && initialSetup) {
       initialSetup({ setupControl });
+      isSetupInitialized.current = true; // Ensure setup is only called once
     }
   }, [initialSetup, setupControl]);
 
