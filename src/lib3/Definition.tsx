@@ -12,6 +12,7 @@ export type UIComponentsV2<T extends ControlMap> = {
     onChange: (value: T[Key]["value"]) => void;
     label: string;
     errors?: string[];
+    wrapperClassName?: string;
   }>;
 };
 
@@ -22,6 +23,7 @@ export interface UIFormsV2<T extends ControlMap> {
     key: Key,
     parameters: T[Key]["config"],
     label: string,
-    validators?: Validator[]
+    validators?: Validator[],
+    wrapperClassName?: string
   ) => void;
 }

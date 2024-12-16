@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ControlMap, UIComponentsV2, UIFormsV2, Validator } from "./Definition";
+import "./grid.css";
 
 export function useUIFormsV2<T extends ControlMap>(
   uiComponents: UIComponentsV2<T>,
@@ -8,7 +9,12 @@ export function useUIFormsV2<T extends ControlMap>(
   const [controls, setControls] = useState<
     Map<
       keyof T,
-      { config: T[keyof T]["config"]; label: string; validators?: Validator[] }
+      {
+        config: T[keyof T]["config"];
+        label: string;
+        validators?: Validator[];
+        wrapperClassName?: string;
+      }
     >
   >(new Map());
 
@@ -19,10 +25,15 @@ export function useUIFormsV2<T extends ControlMap>(
 
   // Memoize setupControl to ensure stability
   const setupControl: UIFormsV2<T>["setupControl"] = useCallback(
-    (key, parameters, label, validators) => {
+    (key, parameters, label, validators, wrapperClassName) => {
       setControls((prev) => {
         const updatedControls = new Map(prev);
-        updatedControls.set(key, { config: parameters, label, validators });
+        updatedControls.set(key, {
+          config: parameters,
+          label,
+          validators,
+          wrapperClassName,
+        });
         return updatedControls;
       });
     },
@@ -52,31 +63,38 @@ export function useUIFormsV2<T extends ControlMap>(
       }
     });
     setErrors(newErrors);
-    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors };
+    return {
+      values: formState,
+      isValid: Object.keys(newErrors).length === 0,
+      errors: newErrors,
+    };
   }, [controls, formState]);
 
   const render = useCallback(() => {
-    return Array.from(controls.entries()).map(([key, { config, label }]) => {
-      const Component = uiComponents[key] as React.ComponentType<{
-        config: T[typeof key]["config"];
-        value: T[typeof key]["value"];
-        onChange: (value: T[typeof key]["value"]) => void;
-        label: string;
-        errors?: string[];
-      }>;
+    return Array.from(controls.entries()).map(
+      ([key, { config, label, wrapperClassName }]) => {
+        const Component = uiComponents[key] as React.ComponentType<{
+          config: T[typeof key]["config"];
+          value: T[typeof key]["value"];
+          onChange: (value: T[typeof key]["value"]) => void;
+          label: string;
+          errors?: string[];
+        }>;
 
-      if (!Component) return null;
+        if (!Component) return null;
 
-      const props = {
-        config,
-        value: formState[key] ?? ("" as T[typeof key]["value"]),
-        onChange: (value: T[typeof key]["value"]) => handleChange(key, value),
-        label,
-        errors: errors[key],
-      };
+        const props = {
+          config,
+          value: formState[key] ?? ("" as T[typeof key]["value"]),
+          onChange: (value: T[typeof key]["value"]) => handleChange(key, value),
+          label,
+          errors: errors[key],
+          wrapperClassName: wrapperClassName,
+        };
 
-      return <Component key={String(key)} {...props} />;
-    });
+        return <Component key={String(key)} {...props} />;
+      }
+    );
   }, [controls, formState, errors, uiComponents, handleChange]);
 
   // Prevent repeated calls to initialSetup
@@ -89,10 +107,11 @@ export function useUIFormsV2<T extends ControlMap>(
     }
   }, [initialSetup, setupControl]);
 
-  return {
+  const form = {
     render,
     getValues: () => formState,
     validate,
     setupControl,
   };
+  return form;
 }

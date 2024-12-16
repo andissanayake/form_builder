@@ -15,23 +15,27 @@ const maxLength =
 
 // Form component using the useUIFormsV2 hook
 const MyForm = () => {
-  const { render, getValues, validate } = useUIFormsV2<BasicFormControls>(
-    NativeUIComponents,
-    (form) => {
-      // Setup controls with labels and validators
-      form.setupControl("text", { placeholder: "Enter text" }, "Text Field", [
-        required,
-        maxLength(10),
-      ]);
-      form.setupControl("number", { min: 0, max: 100 }, "Number Field", [
-        required,
-      ]);
-    }
-  );
+  const form = useUIFormsV2<BasicFormControls>(NativeUIComponents, (form) => {
+    // Setup controls with labels and validators
+    form.setupControl(
+      "textInput",
+      { placeholder: "Enter text" },
+      "Text Field",
+      [required, maxLength(10)],
+      "ui-forms-grid-item-3"
+    );
+    form.setupControl(
+      "numberInput",
+      { min: 0, max: 100 },
+      "Number Field",
+      [required],
+      "ui-forms-grid-item-3"
+    );
+  });
 
   const handleSubmit = () => {
-    const isValid = validate();
-    const values = getValues();
+    const isValid = form.validate();
+    const values = form.getValues();
 
     console.log("Form isValid:", isValid);
     console.log("Form values:", values);
@@ -40,7 +44,7 @@ const MyForm = () => {
   return (
     <div>
       <h2>Dynamic Form</h2>
-      {render()}
+      <div className="ui-forms-grid">{form.render()}</div>
       <button onClick={handleSubmit}>Submit</button>
     </div>
   );
