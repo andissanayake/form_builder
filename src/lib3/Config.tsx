@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 export type ControlMap<C = {}, V = any> = {
   [key: string]: {
@@ -7,7 +7,7 @@ export type ControlMap<C = {}, V = any> = {
   };
 };
 
-export type UIComponents<T extends ControlMap> = {
+export type UIComponentsV2<T extends ControlMap> = {
   [Key in keyof T]: React.ComponentType<{
     config: T[Key]["config"];
     value: T[Key]["value"];
@@ -22,86 +22,67 @@ export interface UIFormsV2<T extends ControlMap> {
   ) => void;
 }
 
-export type BasicControlMap = {
-  textInput: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-    };
-    value: string;
-  };
-  numberInput: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-      min?: number;
-      max?: number;
-    };
-    value: number;
-  };
-  dropdown: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-      options: Array<{ value: string | number; text: string }>;
-    };
-    value: string | number;
-  };
-  checkbox: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-    };
-    value: boolean;
-  };
-  dateInput: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-      minDate?: string;
-      maxDate?: string;
-    };
-    value: string;
-  };
-  textArea: {
-    config: {
-      label: string;
-      wrapperClassName?: string;
-      rows?: number;
-      cols?: number;
-      maxLength?: number;
-    };
-    value: string;
-  };
-};
+export function useUIFormsV2<T extends ControlMap>(
+  uiComponents: UIComponentsV2<T>,
+  initialSetup?: (form: UIFormsV2<T>) => void
+) {
+  const [controls, setControls] = useState<Map<keyof T, T[keyof T]["config"]>>(
+    new Map()
+  );
+  const [formState, setFormState] = useState<
+    Partial<Record<keyof T, T[keyof T]["value"]>>
+  >({});
 
-export class BasicUIForms implements UIFormsV2<BasicControlMap> {
-  private controls = new Map<
-    keyof BasicControlMap,
-    BasicControlMap[keyof BasicControlMap]["config"]
-  >();
-  constructor(ui: UIComponents<BasicControlMap>) {}
+  const setupControl: UIFormsV2<T>["setupControl"] = useCallback(
+    (key, parameters) => {
+      setControls((prev) => {
+        const updatedControls = new Map(prev);
+        updatedControls.set(key, parameters);
+        return updatedControls;
+      });
+    },
+    []
+  );
 
-  setupControl<Key extends keyof BasicControlMap>(
-    key: Key,
-    parameters: BasicControlMap[Key]["config"]
-  ): void {
-    this.controls.set(key, parameters);
-  }
+  const handleChange = useCallback(
+    (key: keyof T, value: T[keyof T]["value"]) => {
+      setFormState((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    },
+    []
+  );
 
-  render(): void {
-    console.log("Rendering the form...");
-    this.controls.forEach((config, key) => {
-      console.log(`Control: ${key}`);
-      console.log("Config:", config);
+  const render = useCallback(() => {
+    return Array.from(controls.entries()).map(([key, config]) => {
+      const Component = uiComponents[key] as React.ComponentType<{
+        config: T[typeof key]["config"];
+        value: T[typeof key]["value"];
+        onChange: (value: T[typeof key]["value"]) => void;
+      }>;
+
+      if (!Component) return null;
+
+      const props = {
+        config,
+        value: formState[key] ?? ("" as T[typeof key]["value"]),
+        onChange: (value: T[typeof key]["value"]) => handleChange(key, value),
+      };
+
+      return <Component key={String(key)} {...props} />;
     });
-  }
+  }, [controls, formState, uiComponents, handleChange]);
 
-  getValues(): Record<string, any> {
-    const values: Record<string, any> = {};
-    this.controls.forEach((_, key) => {
-      values[key] = null;
-    });
-    return values;
-  }
+  useEffect(() => {
+    if (initialSetup) {
+      initialSetup({ setupControl });
+    }
+  }, [initialSetup, setupControl]);
+
+  return {
+    render,
+    getValues: () => formState,
+    setupControl,
+  };
 }
