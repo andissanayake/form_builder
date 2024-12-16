@@ -1,17 +1,7 @@
 import { BasicFormControls } from "./BasicFormControls";
-import { Validator } from "./Definition";
 import { NativeUIComponents } from "./NativeUIComponents";
 import { useUIFormsV2 } from "./useUIFormsV2";
-
-// Define validators
-const required: Validator = (value) =>
-  value ? null : "This field is required.";
-const maxLength =
-  (length: number): Validator =>
-  (value) =>
-    typeof value === "string" && value.length > length
-      ? `Max length is ${length}`
-      : null;
+import { Validators } from "./Validators";
 
 // Form component using the useUIFormsV2 hook
 const MyForm = () => {
@@ -21,14 +11,17 @@ const MyForm = () => {
       "textInput",
       { placeholder: "Enter text" },
       "Text Field",
-      [required, maxLength(10)],
+      [
+        Validators.required("This field is required."),
+        Validators.maxLength(10, "Max length is 10"),
+      ],
       "ui-forms-grid-item-3"
     );
     form.setupControl(
       "numberInput",
       { min: 0, max: 100 },
       "Number Field",
-      [required],
+      [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );
   });

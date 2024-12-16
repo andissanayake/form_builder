@@ -1,39 +1,21 @@
-import React, { useState } from "react";
 import { useUIFormsV2 } from "./useUIFormsV2";
 import { NativeUIComponents } from "./NativeUIComponents";
-import { Validator } from "./Definition";
-
-// Validators
-const required: Validator = (value) =>
-  value ? null : "This field is required.";
-const minAge: Validator = (value) =>
-  typeof value === "number" && value >= 18 ? null : "Age must be at least 18.";
-const maxAge: Validator = (value) =>
-  typeof value === "number" && value <= 120
-    ? null
-    : "Age must be no more than 120.";
-const maxLength =
-  (length: number): Validator =>
-  (value) =>
-    typeof value === "string" && value.length > length
-      ? `Max length is ${length}`
-      : null;
+import { Validators } from "./Validators";
 
 const AdvancedFormWithAllControls = () => {
-  const [userType, setUserType] = useState<string | null>(null);
-
   const form = useUIFormsV2(NativeUIComponents, (form) => {
     // Dropdown control
     form.setupControl(
       "dropdown",
       {
         options: [
+          { value: "", text: "Not Set" },
           { value: "student", text: "Student" },
           { value: "worker", text: "Worker" },
         ],
       },
       "User Type",
-      [required],
+      [Validators.required("This field is required.")],
       "ui-forms-grid-item-6"
     );
 
@@ -42,7 +24,10 @@ const AdvancedFormWithAllControls = () => {
       "textInput",
       { placeholder: "Enter your full name" },
       "Full Name",
-      [required, maxLength(50)],
+      [
+        Validators.required("This field is required."),
+        Validators.maxLength(10, "Max length is 10"),
+      ],
       "ui-forms-grid-item-6"
     );
 
@@ -51,7 +36,11 @@ const AdvancedFormWithAllControls = () => {
       "numberInput",
       { min: 1, max: 150 },
       "Age",
-      [required, minAge, maxAge],
+      [
+        Validators.required("This field is required."),
+        Validators.min(18, "Age must be at least 18."),
+        Validators.max(65, "Age must be no more than 65."),
+      ],
       "ui-forms-grid-item-3"
     );
 
@@ -60,7 +49,7 @@ const AdvancedFormWithAllControls = () => {
       "checkbox",
       {},
       "Agree to Terms",
-      [required],
+      [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );
 
@@ -69,7 +58,7 @@ const AdvancedFormWithAllControls = () => {
       "dateInput",
       { minDate: "2023-01-01", maxDate: "2025-12-31" },
       "Select a Date",
-      [required],
+      [Validators.required("This field is required.")],
       "ui-forms-grid-item-3"
     );
 
@@ -78,7 +67,10 @@ const AdvancedFormWithAllControls = () => {
       "textArea",
       { rows: 4, cols: 50, maxLength: 200 },
       "Your Feedback",
-      [required, maxLength(200)],
+      [
+        Validators.required("This field is required."),
+        Validators.maxLength(100, "Max length is 100"),
+      ],
       "ui-forms-grid-item-6"
     );
   });
@@ -93,14 +85,15 @@ const AdvancedFormWithAllControls = () => {
   };
 
   const handleReset = () => {
-    form.getValues(); // Reset the form state
-    setUserType(null); // Reset the dependent fields
+    form.getValues();
   };
 
   return (
     <div>
       <h2>Advanced Form with All Controls</h2>
-      <div className="ui-forms-grid">{form.render()}</div>
+      <div style={{ width: "600px" }} className="ui-forms-grid">
+        {form.render()}
+      </div>
       <div style={{ marginTop: "20px" }}>
         <button onClick={handleSubmit} style={{ marginRight: "10px" }}>
           Submit
