@@ -1,7 +1,7 @@
 import { BasicFormControls } from "./BasicFormControls";
-import { NativeUIComponents } from "./NativeUIComponents";
-import { useUIFormsV2 } from "./useUIFormsV2";
-import { Validators } from "./Validators";
+import { NativeUIComponents } from "../NativeUIComponents";
+import { useUIFormsV2 } from "../useUIFormsV2";
+import { Validators } from "../Validators";
 
 // Form component using the useUIFormsV2 hook
 const MyForm = () => {

@@ -1,6 +1,6 @@
-import { useUIFormsV2 } from "./useUIFormsV2";
-import { NativeUIComponents } from "./NativeUIComponents";
-import { Validators } from "./Validators";
+import { useUIFormsV2 } from "../useUIFormsV2";
+import { NativeUIComponents } from "../NativeUIComponents";
+import { Validators } from "../Validators";
 
 const AdvancedFormWithAllControls = () => {
   const form = useUIFormsV2(NativeUIComponents, (form) => {

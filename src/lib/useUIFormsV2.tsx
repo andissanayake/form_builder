@@ -4,12 +4,12 @@ import "./grid.css";
 
 export function useUIFormsV2<T extends ControlMap>(
   uiComponents: UIComponentsV2<T>,
-  initialSetup?: (form: UIFormsV2<T>) => void
+  initialSetup?: (form: UIFormsV2<T>) => void,
+  onChange?: (formState: { [key: string]: T[keyof T]["value"] }) => void // onChange callback
 ) {
-  // Use `string` keys to allow multiple controls of the same type
   const [controls, setControls] = useState<
     Map<
-      string, // Unique identifier for each control
+      string,
       {
         type: keyof T;
         config: T[keyof T]["config"];
@@ -31,7 +31,16 @@ export function useUIFormsV2<T extends ControlMap>(
   const [formState, setFormState] = useState<FormState>({});
   const [errors, setErrors] = useState<ErrorsState>({});
 
-  // Memoized setupControl
+  const notifyChange = useCallback(
+    (updatedState: FormState) => {
+      if (onChange) {
+        onChange(updatedState);
+      }
+    },
+    [onChange]
+  );
+
+  // Setup control
   const setupControl: UIFormsV2<T>["setupControl"] = useCallback(
     (key, type, label, parameters, validators, wrapperClassName) => {
       setControls((prev) => {
@@ -49,15 +58,57 @@ export function useUIFormsV2<T extends ControlMap>(
     []
   );
 
-  // Handle form state changes
+  // Handle state changes
   const handleChange = useCallback(
     (key: string, value: T[keyof T]["value"]) => {
-      setFormState((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      setFormState((prev) => {
+        const updatedState = {
+          ...prev,
+          [key]: value,
+        };
+        notifyChange(updatedState);
+        return updatedState;
+      });
     },
-    []
+    [notifyChange]
+  );
+
+  // Patch method
+  const patch = useCallback(
+    (updates: Partial<FormState>) => {
+      setFormState((prev) => {
+        const updatedState = {
+          ...prev,
+          ...updates,
+        };
+        notifyChange(updatedState);
+        return updatedState;
+      });
+    },
+    [notifyChange]
+  );
+
+  // Remove method
+  const remove = useCallback(
+    (key: string) => {
+      setControls((prev) => {
+        const updatedControls = new Map(prev);
+        updatedControls.delete(key);
+        return updatedControls;
+      });
+
+      setFormState((prev) => {
+        const { [key]: _, ...updatedState } = prev; // Remove the key from formState
+        notifyChange(updatedState);
+        return updatedState;
+      });
+
+      setErrors((prev) => {
+        const { [key]: _, ...updatedErrors } = prev; // Remove the key from errors
+        return updatedErrors;
+      });
+    },
+    [notifyChange]
   );
 
   // Validate the form
@@ -125,5 +176,7 @@ export function useUIFormsV2<T extends ControlMap>(
     getValues: () => formState,
     validate,
     setupControl,
+    patch,
+    remove,
   };
 }

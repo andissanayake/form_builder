@@ -1,9 +1,12 @@
-import AdvancedFormWithAllControls from "./lib/AdvancedForm";
+import AdvancedDynamicForm from "./lib/example/AdvancedDynamicForm";
+import AdvancedFormWithAllControls from "./lib/example/AdvancedForm";
+import DynamicFormBasedOnType from "./lib/example/DynamicFormBasedOnType";
+import FormWithDynamicControls from "./lib/example/FormWithDynamicControls";
 
 function App() {
   return (
     <>
-      <AdvancedFormWithAllControls />
+      <DynamicFormBasedOnType />
     </>
   );
 }

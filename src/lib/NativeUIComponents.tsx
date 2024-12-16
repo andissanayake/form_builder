@@ -1,4 +1,4 @@
-import { BasicFormControls } from "./BasicFormControls";
+import { BasicFormControls } from "./example/BasicFormControls";
 import { UIComponentsV2 } from "./Definition";
 
 export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
