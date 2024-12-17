@@ -18,6 +18,17 @@ export type UIComponentsV2<T extends ControlMap> = {
 
 export type Validator = (value: any) => string | null;
 
+export type FormControlConfig<T extends ControlMap> = {
+  [K in keyof T]: {
+    key: string;
+    type: K; // Control type, tied to the key
+    label: string;
+    parameters: T[K]["config"]; // Strict parameters tied to this control
+    validators?: Validator[];
+    wrapperClassName?: string;
+  };
+}[keyof T];
+
 export interface UIFormsV2<T extends ControlMap> {
   setupControl: <Key extends keyof T>(
     key: string,

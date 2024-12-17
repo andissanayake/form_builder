@@ -1,50 +1,53 @@
-import React, { useState } from "react";
-import { useUIFormsV2 } from "../useUIFormsV2";
-import { NativeUIComponents } from "../NativeUIComponents";
-import { Validators } from "../Validators";
+import React, { useState, useEffect } from "react";
+import { useUIFormsV2 } from "../lib/useUIFormsV2";
+import { NativeUIComponents } from "../lib/NativeUIComponents";
+import { Validators } from "../lib/Validators";
+import { FormControlConfig } from "../lib/Definition";
+import { BasicFormControls } from "./BasicFormControls";
 
 const AdvancedDynamicForm = () => {
   const [isAdditionalFieldVisible, setIsAdditionalFieldVisible] =
     useState(false);
 
-  const form = useUIFormsV2(
-    NativeUIComponents,
-    (form) => {
-      // Add an initial set of controls
-      form.setupControl(
-        "username",
-        "textInput",
-        "Username",
-        { placeholder: "Enter your username" },
-        [Validators.required("Username is required.")],
-        "ui-forms-grid-item-6"
-      );
-
-      form.setupControl(
-        "email",
-        "textInput",
-        "Email",
-        { placeholder: "Enter your email" },
-        [Validators.required("Email is required.")],
-        "ui-forms-grid-item-6"
-      );
-
-      form.setupControl(
-        "userType",
-        "dropdown",
-        "User Type",
-        {
-          options: [
-            { value: "", text: "Select a type" },
-            { value: "admin", text: "Admin" },
-            { value: "editor", text: "Editor" },
-            { value: "viewer", text: "Viewer" },
-          ],
-        },
-        [Validators.required("User type is required.")],
-        "ui-forms-grid-item-6"
-      );
+  // Initial configuration for the form controls
+  const initialControls: FormControlConfig<BasicFormControls>[] = [
+    {
+      key: "username",
+      type: "textInput",
+      label: "Username",
+      parameters: { placeholder: "Enter your username" },
+      validators: [Validators.required("Username is required.")],
+      wrapperClassName: "ui-forms-grid-item-6",
     },
+    {
+      key: "email",
+      type: "textInput",
+      label: "Email",
+      parameters: { placeholder: "Enter your email" },
+      validators: [Validators.required("Email is required.")],
+      wrapperClassName: "ui-forms-grid-item-6",
+    },
+    {
+      key: "userType",
+      type: "dropdown",
+      label: "User Type",
+      parameters: {
+        options: [
+          { value: "", text: "Select a type" },
+          { value: "admin", text: "Admin" },
+          { value: "editor", text: "Editor" },
+          { value: "viewer", text: "Viewer" },
+        ],
+      },
+      validators: [Validators.required("User type is required.")],
+      wrapperClassName: "ui-forms-grid-item-6",
+    },
+  ];
+
+  // Initialize form with the initial controls
+  const form = useUIFormsV2<BasicFormControls>(
+    NativeUIComponents,
+    initialControls,
     (state) => {
       console.log("Form state updated:", state);
     }

@@ -1,11 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ControlMap, UIComponentsV2, UIFormsV2, Validator } from "./Definition";
+import {
+  ControlMap,
+  FormControlConfig,
+  UIComponentsV2,
+  UIFormsV2,
+  Validator,
+} from "./Definition";
 import "./grid.css";
 
 export function useUIFormsV2<T extends ControlMap>(
   uiComponents: UIComponentsV2<T>,
-  initialSetup?: (form: UIFormsV2<T>) => void,
-  onChange?: (formState: { [key: string]: T[keyof T]["value"] }) => void // onChange callback
+  formControls: FormControlConfig<T>[],
+  onChange?: (formState: { [key: string]: T[keyof T]["value"] }) => void
 ) {
   const [controls, setControls] = useState<
     Map<
@@ -56,6 +62,25 @@ export function useUIFormsV2<T extends ControlMap>(
       });
     },
     []
+  );
+
+  // New method: Initialize form with config array
+  const initForm = useCallback(
+    (configArray: FormControlConfig<T>[]) => {
+      configArray.forEach(
+        ({ key, type, label, parameters, validators, wrapperClassName }) => {
+          setupControl(
+            key,
+            type,
+            label,
+            parameters,
+            validators,
+            wrapperClassName
+          );
+        }
+      );
+    },
+    [setupControl]
   );
 
   // Handle state changes
@@ -165,11 +190,11 @@ export function useUIFormsV2<T extends ControlMap>(
   const isSetupInitialized = useRef(false);
 
   useEffect(() => {
-    if (!isSetupInitialized.current && initialSetup) {
-      initialSetup({ setupControl });
+    if (!isSetupInitialized.current && formControls) {
+      initForm(formControls);
       isSetupInitialized.current = true;
     }
-  }, [initialSetup, setupControl]);
+  }, [formControls, initForm]);
 
   return {
     render,
@@ -178,5 +203,6 @@ export function useUIFormsV2<T extends ControlMap>(
     setupControl,
     patch,
     remove,
+    initForm,
   };
 }
