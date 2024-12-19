@@ -110,18 +110,17 @@ export function useUIFormsV2<T extends ControlMap>(
     }
   }, [formControls, initForm]);
 
-  const form = useMemo(
-    () => ({
+  const form = useMemo(() => {
+    return {
       render,
-      getValues: useCallback(() => formState, [formState]),
+      getValues: () => formState,
       validate,
       setupControl,
       patch,
       remove,
       initForm,
-    }),
-    [render, formState, validate, setupControl, patch, remove, initForm]
-  );
+    };
+  }, [render, formState, validate, setupControl, patch, remove, initForm]);
 
   useEffect(() => {
     if (onChange) {
