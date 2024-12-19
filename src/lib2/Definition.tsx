@@ -8,16 +8,17 @@ export type ControlMap<C = {}, V = any> = {
 export interface BaseControlProps<Config, Value> {
   config: Config;
   value?: Value;
-  onChange?: (value: Value) => void;
   label: string;
-  errors?: string[];
   wrapperClassName?: string;
 }
 
+export interface BaseControlUIProps<Config, Value> extends BaseControlProps<Config, Value> {
+  onChange: (value: Value) => void;
+  errors?: string[];
+}
+
 export type UIComponentsV2<T extends ControlMap> = {
-  [Key in keyof T]: React.ComponentType<
-    BaseControlProps<T[Key]["config"], T[Key]["value"]>
-  >;
+  [Key in keyof T]: React.ComponentType<BaseControlUIProps<T[Key]["config"], T[Key]["value"]>>;
 };
 
 export type Validator = (value: any) => string | null;
@@ -40,7 +41,5 @@ export interface UseUIFormsV2<T extends ControlMap> {
   setupControl: (controlKey: string, parameters: FormControlConfig<T>) => void;
   patch: (updates: Partial<{ [key: string]: T[keyof T]["value"] }>) => void;
   remove: (key: string) => void;
-  initForm: (
-    configArray: { controlKey: string; parameters: FormControlConfig<T> }[]
-  ) => void;
+  initForm: (configArray: { controlKey: string; parameters: FormControlConfig<T> }[]) => void;
 }
