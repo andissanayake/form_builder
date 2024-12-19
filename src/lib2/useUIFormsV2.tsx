@@ -37,6 +37,9 @@ export function useUIFormsV2<T extends ControlMap>(
   const handleChange = useCallback((key: string, value: T[keyof T]["value"]) => {
     setFormState((prev) => {
       const updatedState = { ...prev, [key]: value };
+      if (onChange) {
+        onChange(updatedState, form);
+      }
       return updatedState;
     });
   }, []);
@@ -121,12 +124,6 @@ export function useUIFormsV2<T extends ControlMap>(
       initForm,
     };
   }, [render, formState, validate, setupControl, patch, remove, initForm]);
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(formState, form);
-    }
-  }, [formState, onChange, form]);
 
   return form;
 }

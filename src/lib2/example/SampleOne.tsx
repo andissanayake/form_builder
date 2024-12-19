@@ -1,8 +1,8 @@
-import { BasicFormControls } from "../lib2/BasicFormControls";
-import { NativeUIComponents } from "../lib2/NativeUIComponents";
-import { useUIFormsV2 } from "../lib2/useUIFormsV2";
-import { FormControlConfig } from "../lib2/Definition";
-import { Validators } from "../lib2/Validators";
+import { BasicFormControls } from "./BasicFormControls";
+import { NativeUIComponents } from "./NativeUIComponents";
+import { useUIFormsV2 } from "../useUIFormsV2";
+import { FormControlConfig } from "../Definition";
+import { Validators } from "./Validators";
 
 const MyForm = () => {
   // Configuration array for form controls
@@ -31,23 +31,20 @@ const MyForm = () => {
   ];
 
   // Use the form hook with configuration
-  const form = useUIFormsV2<BasicFormControls>(NativeUIComponents, formControls, (formState, form) => {
+  const form = useUIFormsV2<BasicFormControls>(NativeUIComponents, formControls, (formState, nform) => {
     console.log("Form State Updated:", formState);
 
     // Dynamically add a new control when `f1` exceeds 5 characters
-    if (formState.f1 && !formState.extraField) {
-      form.setupControl("extraField", {
+    if (formState.f1) {
+      nform.setupControl("extraField", {
         type: "textInput",
         label: "Extra Field",
         config: { placeholder: "Enter extra field text" },
         validators: [Validators.required("This field is required.")],
         wrapperClassName: "ui-forms-grid-item-6",
       });
-    }
-
-    // Remove the extra field if `f1` has 5 or fewer characters
-    if (!formState.f1 && formState.extraField !== undefined) {
-      form.remove("extraField");
+    } else {
+      nform.remove("extraField");
     }
   });
 

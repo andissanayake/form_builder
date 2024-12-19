@@ -1,5 +1,5 @@
 import { BasicFormControls } from "./BasicFormControls";
-import { UIComponentsV2 } from "./Definition";
+import { UIComponentsV2 } from "../Definition";
 
 export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
   textInput: ({ config, value, onChange, label, errors, wrapperClassName }) => (
@@ -22,14 +22,7 @@ export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
     </div>
   ),
 
-  numberInput: ({
-    config,
-    value,
-    onChange,
-    label,
-    errors,
-    wrapperClassName,
-  }) => (
+  numberInput: ({ config, value, onChange, label, errors, wrapperClassName }) => (
     <div className={wrapperClassName}>
       <label>{label}</label>
       <input
@@ -38,9 +31,7 @@ export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
         min={config.min}
         max={config.max}
         value={value ?? ""}
-        onChange={(e) =>
-          onChange(e.target.value === "" ? null : Number(e.target.value))
-        }
+        onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
       />
       {errors && (
         <div style={{ color: "red" }}>
@@ -55,11 +46,7 @@ export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
   dropdown: ({ config, value, onChange, label, errors, wrapperClassName }) => (
     <div className={wrapperClassName}>
       <label>{label}</label>
-      <select
-        style={{ width: "100%" }}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      >
+      <select style={{ width: "100%" }} value={value} onChange={(e) => onChange(e.target.value)}>
         {config.options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.text}
@@ -82,11 +69,7 @@ export const NativeUIComponents: UIComponentsV2<BasicFormControls> = {
         <br />
       </label>
       <label>
-        <input
-          type="checkbox"
-          checked={value}
-          onChange={(e) => onChange(e.target.checked)}
-        />
+        <input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />
         {label}
       </label>
       {errors && (
