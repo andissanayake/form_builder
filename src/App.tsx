@@ -6,7 +6,7 @@ import FormWithDynamicControls from "./example/FormWithDynamicControls";
 function App() {
   return (
     <>
-      <AdvancedDynamicForm />
+      <DynamicFormBasedOnType />
     </>
   );
 }

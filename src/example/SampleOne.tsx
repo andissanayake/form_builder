@@ -1,8 +1,8 @@
 import React from "react";
-import { BasicFormControls } from "./BasicFormControls";
+import { BasicFormControls } from "../lib/BasicFormControls";
 import { NativeUIComponents } from "../lib/NativeUIComponents";
 import { useUIFormsV2 } from "../lib/useUIFormsV2";
-import { Validators } from "../lib/Validators";
+import { Validators } from "./Validators";
 import { FormControlConfig } from "../lib/Definition";
 
 const MyForm = () => {

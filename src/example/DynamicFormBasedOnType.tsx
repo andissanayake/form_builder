@@ -2,16 +2,11 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useUIFormsV2 } from "../lib/useUIFormsV2";
 import { NativeUIComponents } from "../lib/NativeUIComponents";
-import { Validators } from "../lib/Validators";
-import { BasicFormControls } from "./BasicFormControls";
+import { Validators } from "./Validators";
+import { BasicFormControls } from "../lib/BasicFormControls";
 import { FormControlConfig } from "../lib/Definition";
 
 const DynamicFormBasedOnType = () => {
-  const [dynamicControls, setDynamicControls] = useState<
-    FormControlConfig<BasicFormControls>[]
-  >([]);
-
-  // Base configuration for the form
   const baseControls: FormControlConfig<BasicFormControls>[] = [
     {
       key: "username",
@@ -58,39 +53,31 @@ const DynamicFormBasedOnType = () => {
     },
   ];
 
-  // Initialize the form with base controls + dynamic controls
   const form = useUIFormsV2<BasicFormControls>(
     NativeUIComponents,
-    [...baseControls, ...dynamicControls],
+    [...baseControls],
     (state) => {
-      const updatedControls: FormControlConfig<BasicFormControls>[] = [];
-
       // Add "School Name" if userType is student
       if (state.userType === "student") {
-        updatedControls.push({
-          key: "school",
-          type: "textInput",
-          label: "School Name",
-          parameters: { placeholder: "Enter your school name" },
-          validators: [Validators.required("School Name is required.")],
-          wrapperClassName: "ui-forms-grid-item-6",
-        });
+        form.setupControl(
+          "school",
+          "textInput",
+          "School Name",
+          { placeholder: "Enter your school name" },
+          [Validators.required("School Name is required.")],
+          "ui-forms-grid-item-6"
+        );
       }
-
-      // Add "Retirement Plan" if age > 65
       if (state.age && (state.age as number) > 65) {
-        updatedControls.push({
-          key: "retirementPlan",
-          type: "textInput",
-          label: "Retirement Plan",
-          parameters: { placeholder: "Enter your retirement plan" },
-          validators: [Validators.required("Retirement Plan is required.")],
-          wrapperClassName: "ui-forms-grid-item-6",
-        });
+        form.setupControl(
+          "retirementPlan",
+          "textInput",
+          "Retirement Plan",
+          { placeholder: "Enter your retirement plan" },
+          [Validators.required("Retirement Plan is required.")],
+          "ui-forms-grid-item-6"
+        );
       }
-
-      // Update dynamic controls
-      setDynamicControls(updatedControls);
     }
   );
 

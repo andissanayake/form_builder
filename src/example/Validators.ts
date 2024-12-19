@@ -1,4 +1,4 @@
-import { Validator } from "./Definition";
+import { Validator } from "../lib/Definition";
 
 export const Validators = {
   required:

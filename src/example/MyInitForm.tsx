@@ -3,7 +3,7 @@ import { FormControlConfig } from "../lib/Definition"; // Ensure correct path
 import { useUIFormsV2 } from "../lib/useUIFormsV2";
 import { NativeUIComponents } from "../lib/NativeUIComponents";
 import { Validator } from "../lib/Definition";
-import { BasicFormControls } from "./BasicFormControls";
+import { BasicFormControls } from "../lib/BasicFormControls";
 
 // Validators
 const required: Validator = (value) =>
