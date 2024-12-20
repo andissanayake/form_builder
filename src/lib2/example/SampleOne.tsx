@@ -15,7 +15,7 @@ const MyForm = () => {
         config: { placeholder: "Enter text" }, // Matches textInput.config
         validators: [Validators.required("This field is required."), Validators.maxLength(10, "Max length is 10")],
         wrapperClassName: "ui-forms-grid-item-3",
-        value: "sagara",
+        value: "Sagara",
       },
     },
     {

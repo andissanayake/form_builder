@@ -24,15 +24,22 @@ export function useUIFormsV2<T extends ControlMap>(
 
   const setupControl = useCallback((controlKey: string, parameters: FormControlConfig<T>) => {
     setControls((prev) => new Map(prev).set(controlKey, parameters));
+    setFormState((prev) => {
+      if (parameters.value) {
+        return { ...prev, [controlKey]: parameters.value as T[keyof T]["value"] };
+      }
+      return prev;
+    });
   }, []);
 
-  const initForm = useCallback((configArray: { controlKey: string; parameters: FormControlConfig<T> }[]) => {
-    const newControls = new Map<string, FormControlConfig<T>>();
-    configArray.forEach(({ controlKey, parameters }) => {
-      newControls.set(controlKey, parameters);
-    });
-    setControls(newControls);
-  }, []);
+  const initForm = useCallback(
+    (configArray: { controlKey: string; parameters: FormControlConfig<T> }[]) => {
+      configArray.forEach(({ controlKey, parameters }) => {
+        setupControl(controlKey, parameters);
+      });
+    },
+    [setupControl]
+  );
 
   const handleChange = useCallback((key: string, value: T[keyof T]["value"]) => {
     setFormState((prev) => {

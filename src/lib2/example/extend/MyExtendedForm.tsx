@@ -16,6 +16,7 @@ const MyExtendedForm = () => {
           (value) => (value?.length > 20 ? "Name should not exceed 20 characters." : null),
         ],
         wrapperClassName: "ui-forms-grid-item-6",
+        value: "This is Val",
       },
     },
     {
@@ -30,6 +31,7 @@ const MyExtendedForm = () => {
           (value) => (value! > 100 ? "You must be younger than 100 years old." : null),
         ],
         wrapperClassName: "ui-forms-grid-item-6",
+        value: 20,
       },
     },
     {
@@ -47,6 +49,7 @@ const MyExtendedForm = () => {
         },
         validators: [(value) => (value ? null : "Gender is required.")],
         wrapperClassName: "ui-forms-grid-item-6",
+        value: "other",
       },
     },
     {
@@ -56,6 +59,7 @@ const MyExtendedForm = () => {
         label: "Enable Feature",
         config: {},
         wrapperClassName: "ui-forms-grid-item-6",
+        value: true,
       },
     },
   ];
